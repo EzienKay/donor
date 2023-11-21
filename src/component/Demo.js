@@ -1,8 +1,6 @@
-import { connectWallet, createProject } from "../services/blockchain";
-import { truncate, useGlobalState } from "../store/Index";
+import { createProject } from "../services/blockchain";
 
 const Demo = () => {
-  const [connectedAccount] = useGlobalState("connectedAccount");
   const toTimestamp = (dateStr) => {
     const dateObj = Date.parse(dateStr);
     return dateObj / 1000;
@@ -32,15 +30,6 @@ const Demo = () => {
 
   return (
     <div>
-      {connectedAccount ? (
-        <button type="button">{truncate(connectedAccount, 4, 4, 11)}</button>
-      ) : (
-        <button type="button" onClick={connectWallet}>
-          Connect Wallet
-        </button>
-      )}
-      <div>Kay</div>
-
       <button id="createProjectButton" onClick={handleButtonClick}>
         Create Project
       </button>

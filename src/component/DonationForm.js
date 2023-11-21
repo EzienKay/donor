@@ -1,21 +1,23 @@
+import { setGlobalState } from "../store/Index";
 import CryptoDonation from "./CryptoDonation";
 
 const DonationForm = () => {
   return (
-    <>
+    <>         
       <div className="app-flow" style={{ position: "relative", top: "0" }}>
         <div className="app-flow-container">
           <div className="spacer-40"></div>
           <div className="flow">
-          <div className="flow-header">
-            <h2 className="title-3 text-ellipsis">Secure donation</h2>
-          </div>
-          <div className="spacer-24"></div>
-          <button
+            <div className="flow-header">
+              <h2 className="title-3 text-ellipsis">Secure donation</h2>
+            </div>
+            <div className="spacer-24"></div>
+            <button
               type="submit"
               className="btn btn-primary"
               data-qa="donate-button"
               data-tracking-element-name="nextButton"
+              onClick={() => setGlobalState("cryptoDonateModal", "scale-100")}
             >
               Donate Using Crypto
             </button>
@@ -26,10 +28,9 @@ const DonationForm = () => {
               data-qa="donate-button"
               data-tracking-element-name="nextButton"
             >
-              Donate Using Credit Card
+              Donate Using Card
             </button>
             <CryptoDonation />
-            
           </div>
 
           {/* Flow Footer */}

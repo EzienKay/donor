@@ -5303,6 +5303,9 @@ a[href].opacity-50:hover,.cursor-pointer.opacity-50:hover {
   visibility: hidden
 }
 
+
+/* Kay css start */
+
 .kay-test {
   background-color: white;
   top: 0;
@@ -5316,4 +5319,11 @@ a[href].opacity-50:hover,.cursor-pointer.opacity-50:hover {
   gap: 5px;
 }
 
+.scale-0 {
+  scale: 0;
+}
+.btn-success {
+  background-color: rgb(3, 160, 3);
+  color: white;
+}
 

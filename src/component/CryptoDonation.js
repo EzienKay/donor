@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { setGlobalState, truncate, useGlobalState } from "../store/Index";
+import { connectWallet } from "../services/blockchain";
 
 const CryptoDonation = () => {
+  const [cryptoDonateModal] = useGlobalState("cryptoDonateModal");
+  const [connectedAccount] = useGlobalState("connectedAccount");
   const [dedicateDonation, setDedicateDonation] = useState(false);
 
   const handleDedicateDonationChange = () => {
@@ -10,9 +14,23 @@ const CryptoDonation = () => {
   return (
     <>
       <div
-        className="app-flow kay-test app-flow "
+        className={`app-flow kay-test app-flow ${cryptoDonateModal}`}
         style={{ position: "fixed" }}
       >
+        {connectedAccount ? (
+          <button type="button" className="btn btn-success">
+            {truncate(connectedAccount, 4, 4, 11)}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={connectWallet}
+          >
+            Connect Wallet
+          </button>
+        )}
+
         <div className="app-flow-container">
           <div className="spacer-40"></div>
           <div className="flow">
@@ -22,6 +40,7 @@ const CryptoDonation = () => {
                 className="btn-link label-5 d-flex align-items-center text-gray-60-hover-gray-100 text-nodecor"
                 data-qa="back-checkout"
                 data-tracking-element-name="backButton"
+                onClick={() => setGlobalState("cryptoDonateModal", "scale-0")}
               >
                 <span
                   className="icon-slot icon-slot-12 flex-shrink-0 me-1"
@@ -71,9 +90,9 @@ const CryptoDonation = () => {
                     <label className="flex-grow-1">
                       <span className="sr-only">Donation amount NGN</span>
                       <input
-                        className="price-control text-sans-serif "                        
+                        className="price-control text-sans-serif "
                         // defaultValue={0.01}
-                        type="number" 
+                        type="number"
                         step={0.01}
                         min={0.01}
                         name="amount"
