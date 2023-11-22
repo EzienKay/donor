@@ -58,8 +58,8 @@ const CryptoDonation = () => {
                     >
                       <g
                         stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
                         <path d="m9.5 6h-7"></path>
                         <path d="m6 9.5-3.5-3.5 3.5-3.5"></path>
@@ -74,7 +74,7 @@ const CryptoDonation = () => {
                 data-qa="fiat-donate-form"
               >
                 <div className="spacer-8"></div>
-                <h2 class="title-3 text-ellipsis">
+                <h2 className="title-3 text-ellipsis">
                   Payment with Cryptocurrency
                 </h2>
 
@@ -178,7 +178,7 @@ const CryptoDonation = () => {
                         <option value="EWT5F645">Zakat</option>
                       </select>
                       <label
-                        for="designation-{#}"
+                        htmlFor="designation-{#}"
                         className="designation-select text-line-clamp-2"
                       >
                         <span className="label-3 d-inline text-nowrap me-2">
@@ -204,8 +204,8 @@ const CryptoDonation = () => {
                               <path
                                 d="m4 6 4 4 4-4"
                                 stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               ></path>
                             </svg>
                           </span>

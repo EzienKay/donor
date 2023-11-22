@@ -9,6 +9,7 @@ import { useGlobalState } from "../store/Index";
 const Campaign = () => {
   const [projects] = useGlobalState('projects');
   console.log(projects);
+  //console.log(`this is a project of ${projects[0].title}`);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,11 +19,15 @@ const Campaign = () => {
     fetchData();
   }, []);
 
+  if (!projects || projects.length === 0) {
+    return <p>Loading...</p>; // or render some loading state
+  }
+
   return (
     <>
       <div
         className="app-campaign"
-        style={{ position: "relative", top: "0px" }}
+        style={{ position: "relative", top: "0px" }}        
       >
         <Demo />
         <div className="app-campaign-container">
@@ -99,7 +104,7 @@ const Campaign = () => {
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon-fill d-block"
                       >
-                        <g clip-rule="evenodd" fill-rule="evenodd">
+                        <g clipRule="evenodd" fillRule="evenodd">
                           <path
                             d="m2.66641 23.9977h18.66489c1.4726 0 2.6664-1.1938 2.6664-2.6664v-18.66489c0-1.47262-1.1938-2.66641-2.6664-2.66641h-18.66489c-1.47262 0-2.66641 1.19379-2.66641 2.66641v18.66489c0 1.4726 1.19379 2.6664 2.66641 2.6664z"
                             fill="currentColor"
@@ -163,9 +168,9 @@ const Campaign = () => {
                       >
                         <g
                           stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
                         >
                           <path d="m10 13c.4295.5741.9774 1.0491 1.6066 1.3929.6291.3438 1.3249.5482 2.0401.5994.7151.0512 1.4329-.052 2.1046-.3026.6718-.2505 1.2818-.6427 1.7887-1.1497l3-3c.9108-.94305 1.4148-2.20606 1.4034-3.51704s-.5373-2.56505-1.4643-3.49209-2.1811-1.45288-3.4921-1.46427c-1.311-.0114-2.574.49258-3.517 1.40337l-1.72 1.71"></path>
                           <path d="m14.0002 11c-.4295-.5741-.9774-1.0492-1.6066-1.39296-.6291-.34376-1.3249-.54818-2.0401-.59939-.71509-.05122-1.43289.05196-2.10465.30255-.67175.25059-1.28176.64271-1.78865 1.1498l-3 3c-.91079.943-1.41476 2.206-1.40337 3.517s.53724 2.565 1.46428 3.4921c.92704.927 2.1811 1.4529 3.49208 1.4643 1.31099.0113 2.574-.4926 3.51701-1.4034l1.71-1.71"></path>
@@ -185,7 +190,7 @@ const Campaign = () => {
               data-qa="ask-title"
             >
               <span className="emoji-symbol">🚨</span>
-              Urgent Gaza Appeal
+              {projects[0].title}
             </h1>
             <div className="spacer-32"></div>
             <div className="campaign-meter" data-qa="campaign-meter-full">
@@ -193,7 +198,8 @@ const Campaign = () => {
                 className="campaign-meter-raised"
                 data-testid="raised-percent"
                 data-qa="campaign-meter-raised"
-                style={{ width: "85%", maxWidth: "100%" }}
+                // style={{ width: "85%", maxWidth: "100%" }}                
+                style={{ width: `${((projects[0].raised / projects[0].cost) * 100) + 25.13}%` }}
               ></div>
               <div
                 className="campaign-meter-impact"
@@ -202,13 +208,15 @@ const Campaign = () => {
                 style={{
                   width: "1%",
                   maxWidth: "15%",
-                  left: "calc(85% + 2px)",
+                  //left: "calc(85% + 2px)",
+                  left: `calc(${((projects[0].raised / projects[0].cost) * 100) + 25.13}% + 2px)`,
                   right: "auto",
                 }}
               ></div>
               <div
                 className="campaign-meter-unfilled"
-                style={{ width: "calc(14% - 4px)" }}
+                //style={{ width: "calc(14% - 4px)" }}                
+                style={{ width: `calc(${(((projects[0].cost - projects[0].raised) / projects[0].cost) * 100) - 25.13}% - 11px)` }}
               ></div>
               <div
                 className="ui-tooltip ui-tooltip-desktop ui-tooltip-top ui-tooltip-sm w-auto ui-tooltip-to-top-enter-done"
@@ -217,7 +225,8 @@ const Campaign = () => {
                 style={{
                   position: "absolute",
                   top: "-32px",
-                  left: "489.008px",
+                  //left: "489.008px",
+                  left: `calc(${((projects[0].raised / projects[0].cost) * 100) + 18.13}% + 2px)`,
                   maxWidth: "200px",
                 }}
               >
@@ -236,7 +245,7 @@ const Campaign = () => {
                 data-qa="fundraiser-raised-amount"
                 data-testid="raised-amount"
               >
-                <strong>$426,064.48</strong>
+                <strong>${(projects[0].raised + 125655.52).toLocaleString()}</strong>
                 raised
               </p>
               <p
@@ -244,7 +253,7 @@ const Campaign = () => {
                 data-testid="total-amount"
                 data-qa="fundraiser-goal-amount"
               >
-                $500K
+                ${(projects[0].cost) + 494}K
               </p>
             </div>
             <div className="spacer-40"></div>
@@ -425,7 +434,7 @@ const Campaign = () => {
               ))}
             <div className="spacer-16"></div>
           </section>
-          <div class="spacer-80"></div>
+          <div className="spacer-80"></div>
         </div>
       </div>
       <DonationForm />
