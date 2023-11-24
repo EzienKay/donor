@@ -135,16 +135,71 @@ const loadProject = async (id) => {
   }
 }
 
+// const loadProject = async (id) => {
+//   try {
+//     if (!id) {
+//       console.error("Project ID is undefined");
+//       return;
+//     }
+
+//     if (!ethereum) {
+//       alert("Please install Metamask");
+//       return;
+//     }
+
+//     console.log("Project ID in loadProject:", id); // Log the ID
+
+//     const contract = await getEtheriumContract();
+//     console.log("Project ID:", id);
+
+//     const project = await contract.getProject(id);
+//     console.log("Fetched Project:", project);
+
+//     if (!project) {
+//       console.error("Project data is undefined");
+//       return;
+//     }
+
+//     setGlobalState("project", structuredProjects([project])[0]);
+//   } catch (error) {
+//     console.error("Error loading project:", error);
+//     alert("Error loading project. Please check the console for details.");
+//     reportError(error);
+//   }
+// };
+
+
+
+
+
+// const backProject = async (id, amount) => {
+//   try {
+//     if (!ethereum) return alert('Please install Metamask')
+//     const connectedAccount = getGlobalState('connectedAccount')
+//     const contract = await getEtheriumContract()
+//     amount = ethers.utils.parseEther(amount)
+
+//     tx = await contract.backProject(id, {
+//       from: connectedAccount,
+//       value: amount._hex,
+//     })
+
+//     await tx.wait()
+//     await getBackers(id)
+//   } catch (error) {
+//     reportError(error)
+//   }
+// }
 const backProject = async (id, amount) => {
   try {
     if (!ethereum) return alert('Please install Metamask')
     const connectedAccount = getGlobalState('connectedAccount')
     const contract = await getEtheriumContract()
-    amount = ethers.utils.parseEther(amount)
+    amount = ethers.BigNumber.from(ethers.utils.parseEther(amount))
 
     tx = await contract.backProject(id, {
       from: connectedAccount,
-      value: amount._hex,
+      value: amount,
     })
 
     await tx.wait()
@@ -153,6 +208,8 @@ const backProject = async (id, amount) => {
     reportError(error)
   }
 }
+
+
 
 const getBackers = async (id) => {
   try {
@@ -194,6 +251,7 @@ const structuredBackers = (backers) =>
     .reverse()
 
 const structuredProjects = (projects) =>
+
   projects
     .map((project) => ({
       id: project.id.toNumber(),
@@ -210,6 +268,42 @@ const structuredProjects = (projects) =>
       status: project.status,
     }))
     .reverse()
+
+// const structuredProjects = (projects) => {
+//   console.log("Input projects to structuredProjects:", projects); // Log the input
+
+//   if (!projects || projects.length === 0 || !projects[0]) {
+//     console.error("Invalid projects data:", projects);
+//     return [];
+//   }
+
+//   // Placeholder comments for the logic...
+//   const structuredData = projects.map((project) => {
+//     // Your logic for structuring individual project data
+//     // For example, mapping project fields to a new structure
+//     const structuredProject = {
+//       id: project.id,
+//       owner: project.owner.toLowerCase(),
+//       title: project.title,
+//       description: project.description,
+//       timestamp: new Date(project.timestamp.toNumber()).getTime(),
+//       expiresAt: new Date(project.expiresAt.toNumber()).getTime(),
+//       date: toDate(project.expiresAt.toNumber() * 1000),
+//       imageURL: project.imageURL,
+//       raised: parseInt(project.raised._hex) / 10 ** 18,
+//       cost: parseInt(project.cost._hex) / 10 ** 18,
+//       backers: project.backers.toNumber(),
+//       status: project.status,
+//     };
+
+//     // Return the structured project
+//     return structuredProject;
+//   });
+//   console.log("Structured projects:", structuredData); // Log the output
+//   // Return the array of structured projects
+//   return structuredData;
+// };
+
 
 const toDate = (timestamp) => {
   const date = new Date(timestamp)

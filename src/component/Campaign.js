@@ -1,15 +1,13 @@
 import { useEffect } from "react";
-import { loadProjects } from "../services/blockchain";
+import { getBackers, loadProjects } from "../services/blockchain";
 import DonationForm from "./DonationForm";
-import Demo from "./Demo";
-import { useGlobalState } from "../store/Index";
-
-
+import { truncate, useGlobalState } from "../store/Index";
+import Moment from "react-moment";
+import { globe } from "../res/image/Images";
 
 const Campaign = () => {
-  const [projects] = useGlobalState('projects');
-  console.log(projects);
-  //console.log(`this is a project of ${projects[0].title}`);
+  const [projects] = useGlobalState("projects");
+  const [backers] = useGlobalState("backers");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +17,16 @@ const Campaign = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchBackers = async () => {
+      if (projects.length > 0) {
+        await getBackers(projects[0].id);
+      }
+    };
+
+    fetchBackers();
+  }, [projects]);
+
   if (!projects || projects.length === 0) {
     return <p>Loading...</p>; // or render some loading state
   }
@@ -27,11 +35,9 @@ const Campaign = () => {
     <>
       <div
         className="app-campaign"
-        style={{ position: "relative", top: "0px" }}        
+        style={{ position: "relative", top: "0px" }}
       >
-        <Demo />
         <div className="app-campaign-container">
-          
           <div className="spacer-28"></div>
           <header className="header">
             <div className="header-company">
@@ -198,8 +204,12 @@ const Campaign = () => {
                 className="campaign-meter-raised"
                 data-testid="raised-percent"
                 data-qa="campaign-meter-raised"
-                // style={{ width: "85%", maxWidth: "100%" }}                
-                style={{ width: `${((projects[0].raised / projects[0].cost) * 100) + 25.13}%` }}
+                // style={{ width: "85%", maxWidth: "100%" }}
+                style={{
+                  width: `${
+                    (projects[0].raised / projects[0].cost) * 100 + 25.13
+                  }%`,
+                }}
               ></div>
               <div
                 className="campaign-meter-impact"
@@ -209,14 +219,23 @@ const Campaign = () => {
                   width: "1%",
                   maxWidth: "15%",
                   //left: "calc(85% + 2px)",
-                  left: `calc(${((projects[0].raised / projects[0].cost) * 100) + 25.13}% + 2px)`,
+                  left: `calc(${
+                    (projects[0].raised / projects[0].cost) * 100 + 25.13
+                  }% + 2px)`,
                   right: "auto",
                 }}
               ></div>
               <div
                 className="campaign-meter-unfilled"
-                //style={{ width: "calc(14% - 4px)" }}                
-                style={{ width: `calc(${(((projects[0].cost - projects[0].raised) / projects[0].cost) * 100) - 25.13}% - 11px)` }}
+                //style={{ width: "calc(14% - 4px)" }}
+                style={{
+                  width: `calc(${
+                    ((projects[0].cost - projects[0].raised) /
+                      projects[0].cost) *
+                      100 -
+                    25.13
+                  }% - 11px)`,
+                }}
               ></div>
               <div
                 className="ui-tooltip ui-tooltip-desktop ui-tooltip-top ui-tooltip-sm w-auto ui-tooltip-to-top-enter-done"
@@ -226,7 +245,9 @@ const Campaign = () => {
                   position: "absolute",
                   top: "-32px",
                   //left: "489.008px",
-                  left: `calc(${((projects[0].raised / projects[0].cost) * 100) + 18.13}% + 2px)`,
+                  left: `calc(${
+                    (projects[0].raised / projects[0].cost) * 100 + 18.13
+                  }% + 2px)`,
                   maxWidth: "200px",
                 }}
               >
@@ -245,7 +266,9 @@ const Campaign = () => {
                 data-qa="fundraiser-raised-amount"
                 data-testid="raised-amount"
               >
-                <strong>${(projects[0].raised + 125655.52).toLocaleString()}</strong>
+                <strong>
+                  ${(projects[0].raised * 2112.74 + 125655.52).toLocaleString()}
+                </strong>
                 raised
               </p>
               <p
@@ -253,7 +276,7 @@ const Campaign = () => {
                 data-testid="total-amount"
                 data-qa="fundraiser-goal-amount"
               >
-                ${(projects[0].cost) + 494}K
+                ${projects[0].cost + 494}K
               </p>
             </div>
             <div className="spacer-40"></div>
@@ -385,61 +408,56 @@ const Campaign = () => {
             <div className="spacer-40"></div>
             <h3 className="title-4 text-ellipsis">Recent donations</h3>
             <div className="spacer-20"></div>
-            {Array(5)
-              .fill()
-              .map((backing, i) => (
-                <div
-                  key={i}
-                  className="px-5 pt-4 mb-4 border border-gray-15 border-radius-16 pb-4 d-flex flex-row-reverse align-items-flex-start"
-                  data-testid="donor-impact-section-DUCPURLF"
+            {backers.map((backer, i) => (
+              <div
+                key={i}
+                className="px-5 pt-4 mb-4 border border-gray-15 border-radius-16 pb-4 d-flex flex-row-reverse align-items-flex-start"
+                data-testid="donor-impact-section-DUCPURLF"
+              >
+                <p
+                  className="body-1 text-primary text-sans-serif flex-shrink-0 ms-5"
+                  style={{ marginTop: "-2px" }}
                 >
-                  <p
-                    className="body-1 text-primary text-sans-serif flex-shrink-0 ms-5"
-                    style={{ marginTop: "-2px" }}
-                  >
-                    {279.0 + i}&nbsp;MVR
+                  ${(backer.contribution * 2112.74).toLocaleString()}
+                </p>
+                <div
+                  className="flex-grow-1 me-auto"
+                  style={{ maxWidth: "450px" }}
+                >
+                  <p className="label-3 text-ellipsis">
+                    <strong>{truncate(backer.owner, 2, 4, 10)}</strong> made
+                    donation with Crypto
                   </p>
-                  <div
-                    className="flex-grow-1 me-auto"
-                    style={{ maxWidth: "450px" }}
-                  >
-                    <p className="label-3 text-ellipsis">
-                      <strong>nasheeda a.</strong> made a one-time donation
-                    </p>
-                    <p className="label-5 text-gray-80 text-ellipsis mt-1">
-                      <span
-                        className="icon-slot icon-slot-14 d-inline-block me-2"
-                        aria-hidden="true"
-                      >
-                        <span className="p-abs centered">
-                          <img
-                            src="https://static.fundraiseup.com/src/images/flags/MV.png"
-                            width="14"
-                            height="14"
-                            className="d-block"
-                            alt="MV"
-                          />
-                        </span>
+                  <p className="label-5 text-gray-80 text-ellipsis mt-1">
+                    <span
+                      className="icon-slot icon-slot-14 d-inline-block me-2"
+                      aria-hidden="true"
+                    >
+                      <span className="p-abs centered">
+                        <img
+                          src={globe}
+                          width="14"
+                          height="14"
+                          className="d-block"
+                          alt="MV"
+                        />
                       </span>
-                      Malé, Maldives
-                      <span className="d-inline-block text-gray-40 mx-1">
-                        ·
-                      </span>
-                      <span className="d-inline-block text-nowrap">
-                        25 minutes ago{new Date().getTime()}
-                      </span>
-                    </p>
-                  </div>
+                    </span>
+                    Anonymous
+                    <span className="d-inline-block text-gray-40 mx-1">·</span>
+                    <span className="d-inline-block text-nowrap">
+                      <Moment fromNow>{backer.timestamp}</Moment>
+                    </span>
+                  </p>
                 </div>
-              ))}
+              </div>
+            ))}
             <div className="spacer-16"></div>
           </section>
           <div className="spacer-80"></div>
         </div>
       </div>
       <DonationForm />
-
-      
     </>
   );
 };

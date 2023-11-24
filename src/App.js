@@ -4,7 +4,9 @@ import Campaign from "./component/Campaign";
 import { isWallectConnected } from "./services/blockchain";
 import { Route, Routes } from "react-router-dom";
 import Demo from "./component/Demo";
-
+import Project from "./component/Project";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -20,20 +22,28 @@ function App() {
 
   return (
     <div className="app">
-      {loaded ? (<Routes>
-        <Route path="/" element={<Campaign />} />
-        <Route path="create" element={<Demo />} />
-      </Routes>) : null}
+      {loaded ? (
+        <Routes>
+          <Route path="/" element={<Campaign />} />
+          <Route path="create" element={<Demo />} />
+          <Route path="/projects/:id" element={<Project />} />
+        </Routes>
+      ) : (<Demo />)}
+      <ToastContainer
+        position="bottom-center"
+        autoClose={10000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
-
-    // <div className="app">
-    //   {loaded ? (
-        
-    //       <Campaign />
-        
-    //   ) : null}
-    // </div>
   );
 }
 
 export default App;
+

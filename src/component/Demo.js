@@ -1,6 +1,11 @@
-import { createProject } from "../services/blockchain";
+import { connectWallet, createProject } from "../services/blockchain";
+import { truncate, useGlobalState } from "../store/Index";
 
 const Demo = () => {
+  const [connectedAccount] = useGlobalState("connectedAccount");
+
+
+
   const toTimestamp = (dateStr) => {
     const dateObj = Date.parse(dateStr);
     return dateObj / 1000;
@@ -30,9 +35,30 @@ const Demo = () => {
 
   return (
     <div>
-      <button id="createProjectButton" onClick={handleButtonClick}>
+      <button className="btn btn-primary" id="createProjectButton" onClick={handleButtonClick}>
         Create Project
       </button>
+
+      {connectedAccount ? (
+                    <button type="button" className="btn btn-success ">
+                      <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="1em"
+                          viewBox="0 0 320 512"
+                        >
+                          <path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z" />
+                        </svg>
+           ETH {truncate(connectedAccount, 4, 4, 11)}
+          </button>
+        ) : (
+          <button
+          type="button"
+          className="btn btn-primary"
+          onClick={connectWallet}
+          >
+            Connect Wallet
+          </button>
+        )}
     </div>
   );
 };

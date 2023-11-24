@@ -5313,7 +5313,7 @@ a[href].opacity-50:hover,.cursor-pointer.opacity-50:hover {
   height: 100vh; 
 }
 
-.kay-label {
+.kay-label, .connect button {
   display: flex;    
   align-items: center;
   gap: 5px;
@@ -5327,3 +5327,12 @@ a[href].opacity-50:hover,.cursor-pointer.opacity-50:hover {
   color: white;
 }
 
+
+.connect {
+  display: flex;
+}
+
+.connect button {
+    margin-right: 5px;
+    justify-content: center;
+}

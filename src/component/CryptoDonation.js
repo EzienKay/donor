@@ -1,15 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { setGlobalState, truncate, useGlobalState } from "../store/Index";
-import { connectWallet } from "../services/blockchain";
+import { backProject, connectWallet, loadProjects } from "../services/blockchain";
+import { toast } from "react-toastify";
 
 const CryptoDonation = () => {
   const [cryptoDonateModal] = useGlobalState("cryptoDonateModal");
   const [connectedAccount] = useGlobalState("connectedAccount");
   const [dedicateDonation, setDedicateDonation] = useState(false);
+  const [amount, setAmount] = useState('')
+  const [projects] = useGlobalState("projects");
+  const project = projects[0]; // Access the first element
+  
+  console.log('does work', project)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await loadProjects();
+    };
+
+    fetchData();
+  }, []);
+
+  if (!project) {
+    console.error("Project data is undefined");
+    // Handle the case where project is not defined or still loading
+    return <div>Loading...</div>;
+  }
+
 
   const handleDedicateDonationChange = () => {
     setDedicateDonation(!dedicateDonation);
   };
+
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!amount || !project) return;
+  
+    await backProject(project.id, amount);
+    toast.success('Thank you for your donation, Project backed successfully, will reflect in 30sec.');
+  };
+  
 
   return (
     <>
@@ -17,19 +48,8 @@ const CryptoDonation = () => {
         className={`app-flow kay-test app-flow ${cryptoDonateModal}`}
         style={{ position: "fixed" }}
       >
-        {connectedAccount ? (
-          <button type="button" className="btn btn-success">
-            {truncate(connectedAccount, 4, 4, 11)}
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={connectWallet}
-          >
-            Connect Wallet
-          </button>
-        )}
+
+
 
         <div className="app-flow-container">
           <div className="spacer-40"></div>
@@ -70,8 +90,9 @@ const CryptoDonation = () => {
                 <span className="text-nowrap">Back</span>
               </button>
               <form
-                aria-label="Secure donation screen, donation checkout"
-                data-qa="fiat-donate-form"
+                // aria-label="Secure donation screen, donation checkout"
+                // data-qa="fiat-donate-form"
+                onSubmit={handleSubmit}
               >
                 <div className="spacer-8"></div>
                 <h2 className="title-3 text-ellipsis">
@@ -88,7 +109,7 @@ const CryptoDonation = () => {
                   >
                     {/* <div className="flex-shrink-0 align-self-center me-1 body-3 text-gray-80" aria-hidden="true" data-qa="currency-symbol">₦</div> */}
                     <label className="flex-grow-1">
-                      <span className="sr-only">Donation amount NGN</span>
+                      {/* <span className="sr-only">Donation amount NGN</span> */}
                       <input
                         className="price-control text-sans-serif "
                         // defaultValue={0.01}
@@ -98,6 +119,8 @@ const CryptoDonation = () => {
                         name="amount"
                         required
                         placeholder="type in your donation..."
+                        onChange={(e) => setAmount(e.target.value)}
+                        value={amount}
                         // autocomplete="off"
                         // inputmode="decimal"
                         // data-qa="amount"
@@ -214,15 +237,46 @@ const CryptoDonation = () => {
                     </div>
                   </div>
                   <div className="spacer-40"></div>
+
+
+                  <div className="connect" >
+
+
+                    
+                  {connectedAccount ? (
+                    <button type="button" className="btn btn-success ">
+                      <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="1em"
+                          viewBox="0 0 320 512"
+                        >
+                          <path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z" />
+                        </svg>
+           ETH {truncate(connectedAccount, 0, 4, 7)}
+          </button>
+        ) : (
+          <button
+          type="button"
+          className="btn btn-primary"
+          onClick={connectWallet}
+          >
+            Connect Wallet
+          </button>
+        )}
+
+
                   {/* Donate Button */}
                   <button
                     type="submit"
                     className="btn btn-primary"
                     data-qa="donate-button"
                     data-tracking-element-name="nextButton"
-                  >
+                    >
                     Donate
                   </button>
+
+        </div>
+
                 </div>
               </form>
             </div>
