@@ -27,9 +27,9 @@ const Campaign = () => {
     fetchBackers();
   }, [projects]);
 
-  if (!projects || projects.length === 0) {
-    return <p>Loading...</p>; // or render some loading state
-  }
+  // if (!projects || projects.length === 0) {
+  //   return <p>Loading...</p>; // or render some loading state
+  // }
 
   return (
     <>
@@ -196,7 +196,7 @@ const Campaign = () => {
               data-qa="ask-title"
             >
               <span className="emoji-symbol">🚨</span>
-              {projects[0].title}
+              {projects[0]?.title}
             </h1>
             <div className="spacer-32"></div>
             <div className="campaign-meter" data-qa="campaign-meter-full">
@@ -207,7 +207,7 @@ const Campaign = () => {
                 // style={{ width: "85%", maxWidth: "100%" }}
                 style={{
                   width: `${
-                    (projects[0].raised / projects[0].cost) * 100 + 25.13
+                    (projects[0]?.raised / projects[0]?.cost) * 100 + 25.13
                   }%`,
                 }}
               ></div>
@@ -220,7 +220,7 @@ const Campaign = () => {
                   maxWidth: "15%",
                   //left: "calc(85% + 2px)",
                   left: `calc(${
-                    (projects[0].raised / projects[0].cost) * 100 + 25.13
+                    (projects[0]?.raised / projects[0]?.cost) * 100 + 25.13
                   }% + 2px)`,
                   right: "auto",
                 }}
@@ -230,8 +230,8 @@ const Campaign = () => {
                 //style={{ width: "calc(14% - 4px)" }}
                 style={{
                   width: `calc(${
-                    ((projects[0].cost - projects[0].raised) /
-                      projects[0].cost) *
+                    ((projects[0]?.cost - projects[0]?.raised) /
+                      projects[0]?.cost) *
                       100 -
                     25.13
                   }% - 11px)`,
@@ -242,13 +242,13 @@ const Campaign = () => {
                 role="status"
                 aria-live="polite"
                 style={{
-                  position: "absolute",
-                  top: "-32px",
+                  // position: "absolute",
+                   top: "-32px",
                   //left: "489.008px",
                   left: `calc(${
-                    (projects[0].raised / projects[0].cost) * 100 + 18.13
+                    (projects[0]?.raised / projects[0]?.cost) * 100 + 18.13
                   }% + 2px)`,
-                  maxWidth: "200px",
+                  //maxWidth: "200px",
                 }}
               >
                 <div className="ui-tooltip-body ui-tooltip-body-desktop">
@@ -267,7 +267,7 @@ const Campaign = () => {
                 data-testid="raised-amount"
               >
                 <strong>
-                  ${(projects[0].raised * 2112.74 + 125655.52).toLocaleString()}
+                  ${(projects[0]?.raised * 2112.74 + 125655.52).toLocaleString()}
                 </strong>
                 raised
               </p>
@@ -276,7 +276,7 @@ const Campaign = () => {
                 data-testid="total-amount"
                 data-qa="fundraiser-goal-amount"
               >
-                ${projects[0].cost + 494}K
+                ${projects[0]?.cost + 494}K
               </p>
             </div>
             <div className="spacer-40"></div>
@@ -426,7 +426,7 @@ const Campaign = () => {
                 >
                   <p className="label-3 text-ellipsis">
                     <strong>{truncate(backer.owner, 2, 4, 10)}</strong> made
-                    donation with Crypto
+                    donation with crypto
                   </p>
                   <p className="label-5 text-gray-80 text-ellipsis mt-1">
                     <span

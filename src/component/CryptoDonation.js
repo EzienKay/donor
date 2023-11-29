@@ -12,6 +12,7 @@ const CryptoDonation = () => {
   const project = projects[0]; // Access the first element
   
   console.log('does work', project)
+  console.log('does work', projects)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,11 +22,11 @@ const CryptoDonation = () => {
     fetchData();
   }, []);
 
-  if (!project) {
-    console.error("Project data is undefined");
-    // Handle the case where project is not defined or still loading
-    return <div>Loading...</div>;
-  }
+  // if (!project) {
+  //   console.error("Project data is undefined");
+  //   // Handle the case where project is not defined or still loading
+  //   return <div>Loading...</div>;
+  // }
 
 
   const handleDedicateDonationChange = () => {
@@ -33,13 +34,30 @@ const CryptoDonation = () => {
   };
 
   
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!amount || !project) return;
+  
+  //   await backProject(project.id, amount);
+  //   toast.success('Thank you for your donation, Project backed successfully, will reflect in 30sec.');
+  // };
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!amount || !project) return;
   
-    await backProject(project.id, amount);
-    toast.success('Thank you for your donation, Project backed successfully, will reflect in 30sec.');
+    try {
+      await backProject(project.id, amount);
+      toast.success('Thank you for your donation! The project has been backed successfully and will reflect in 30 seconds.');
+    } catch (error) {
+      // Handle other errors if needed
+      console.error('Error in handleSubmit:', error);
+      toast.error('An error occurred while processing your donation. Please try again.');
+    }
   };
+  
+  
   
 
   return (

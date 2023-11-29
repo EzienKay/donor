@@ -4,8 +4,8 @@ import CryptoDonation from "./CryptoDonation";
 const DonationForm = () => {
   return (
     <>         
-      <div className="app-flow" style={{ position: "relative", top: "0" }}>
-        <div className="app-flow-container">
+      <div className="app-flow" style={{ position: "relative", top: "0", display: "flex", justifyContent: "center", }}>
+        <div className="app-flow-container" style={{ position: "fixed", top: "6rem" }}>
           <div className="spacer-40"></div>
           <div className="flow">
             <div className="flow-header">
@@ -35,6 +35,7 @@ const DonationForm = () => {
 
           {/* Flow Footer */}
           <div className="flow-footer">
+          <div className="spacer-48"></div>
             <hr className="my-0" />
             <div className="spacer-16"></div>
             <div>

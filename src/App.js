@@ -28,7 +28,7 @@ function App() {
           <Route path="create" element={<Demo />} />
           <Route path="/projects/:id" element={<Project />} />
         </Routes>
-      ) : (<Demo />)}
+      ) : null }
       <ToastContainer
         position="bottom-center"
         autoClose={10000}

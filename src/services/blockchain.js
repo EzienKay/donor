@@ -18,6 +18,8 @@ const connectWallet = async () => {
   }
 }
 
+
+
 const isWallectConnected = async () => {
   try {
     if (!ethereum) return alert('Please install Metamask')
@@ -83,29 +85,25 @@ const updateProject = async ({
   title,
   description,
   imageURL,
+  cost,
   expiresAt,
 }) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum) return alert('Please install Metamask');
 
-    const contract = await getEtheriumContract()
-    tx = await contract.updateProject(id, title, description, imageURL, expiresAt)
-    await tx.wait()
-    await loadProject(id)
+    const contract = await getEtheriumContract();
+    cost = ethers.utils.parseEther(cost);
+    tx = await contract.updateProject(id, title, description, imageURL, cost, expiresAt);
+    await tx.wait();
+    await loadProjects();
   } catch (error) {
-    reportError(error)
+    reportError(error);
   }
-}
+};
 
-const deleteProject = async (id) => {
-  try {
-    if (!ethereum) return alert('Please install Metamask')
-    const contract = await getEtheriumContract()
-    await contract.deleteProject(id)
-  } catch (error) {
-    reportError(error)
-  }
-}
+
+
+
 
 const loadProjects = async () => {
   try {
@@ -135,79 +133,45 @@ const loadProject = async (id) => {
   }
 }
 
-// const loadProject = async (id) => {
-//   try {
-//     if (!id) {
-//       console.error("Project ID is undefined");
-//       return;
-//     }
-
-//     if (!ethereum) {
-//       alert("Please install Metamask");
-//       return;
-//     }
-
-//     console.log("Project ID in loadProject:", id); // Log the ID
-
-//     const contract = await getEtheriumContract();
-//     console.log("Project ID:", id);
-
-//     const project = await contract.getProject(id);
-//     console.log("Fetched Project:", project);
-
-//     if (!project) {
-//       console.error("Project data is undefined");
-//       return;
-//     }
-
-//     setGlobalState("project", structuredProjects([project])[0]);
-//   } catch (error) {
-//     console.error("Error loading project:", error);
-//     alert("Error loading project. Please check the console for details.");
-//     reportError(error);
-//   }
-// };
-
-
-
-
-
-// const backProject = async (id, amount) => {
-//   try {
-//     if (!ethereum) return alert('Please install Metamask')
-//     const connectedAccount = getGlobalState('connectedAccount')
-//     const contract = await getEtheriumContract()
-//     amount = ethers.utils.parseEther(amount)
-
-//     tx = await contract.backProject(id, {
-//       from: connectedAccount,
-//       value: amount._hex,
-//     })
-
-//     await tx.wait()
-//     await getBackers(id)
-//   } catch (error) {
-//     reportError(error)
-//   }
-// }
 const backProject = async (id, amount) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
-    const connectedAccount = getGlobalState('connectedAccount')
-    const contract = await getEtheriumContract()
-    amount = ethers.BigNumber.from(ethers.utils.parseEther(amount))
 
-    tx = await contract.backProject(id, {
+    if (!ethereum) {
+      alert('Please install Metamask');
+      return;
+    }
+
+    const connectedAccount = getGlobalState('connectedAccount');
+    const contract = await getEtheriumContract();
+
+    if (!connectedAccount || !contract) {
+      alert('Error: Connected account or Ethereum contract not found');
+      return;
+    }
+
+    amount = ethers.BigNumber.from(ethers.utils.parseEther(amount));
+
+    const tx = await contract.backProject(id, {
       from: connectedAccount,
       value: amount,
-    })
+    });
 
-    await tx.wait()
-    await getBackers(id)
+    await tx.wait();
+    await getBackers(id);
   } catch (error) {
-    reportError(error)
+    if (error.message.includes('User denied transaction')) {
+      console.log('Transaction cancelled by the user.');
+      // Handle cancellation (e.g., show a message to the user)
+      // You can add a custom message here
+    } else if (typeof ethereum === 'undefined') {
+      alert('Please install Metamask');
+    } else {
+      reportError(error);
+    }
   }
-}
+};
+
+
 
 
 
@@ -228,8 +192,12 @@ const payoutProject = async (id) => {
     if (!ethereum) return alert('Please install Metamask')
     const connectedAccount = getGlobalState('connectedAccount')
     const contract = await getEtheriumContract()
+    const options = {
+      gasLimit: 500000, // Adjust the gas limit based on your contract's needs
+    };
 
     tx = await contract.payOutProject(id, {
+      ...options,
       from: connectedAccount,
     })
 
@@ -239,6 +207,41 @@ const payoutProject = async (id) => {
     reportError(error)
   }
 }
+
+
+const deleteProject = async (id) => {
+  try {
+    if (!ethereum) throw new Error('Please install Metamask');
+    const contract = await getEtheriumContract();
+    const options = {
+      gasLimit: 500000, // Adjust the gas limit based on your contract's needs
+    };
+    await contract.deleteProject(id, options);
+  } catch (error) {
+    reportError(error);
+  }
+};
+
+// const deleteProject = async (id) => {
+//   try {
+//     if (!ethereum) throw new Error('No ethereum object. Please install MetaMask.');
+//     const contract = await getEtheriumContract();
+//     const options = {
+//       gasLimit: 500000, // Adjust the gas limit based on your contract's needs
+//     };
+//     await contract.deleteProject(id, options);
+//   } catch (error) {
+//     if (error.code === -32603 && error.data && error.data.message) {
+//       console.error("Revert Reason:", error.data.message);
+//     } else {
+//       console.error("Unexpected Error:", error);
+//     }
+//     reportError(error);
+//   }
+// };
+
+
+
 
 const structuredBackers = (backers) =>
   backers
@@ -268,41 +271,6 @@ const structuredProjects = (projects) =>
       status: project.status,
     }))
     .reverse()
-
-// const structuredProjects = (projects) => {
-//   console.log("Input projects to structuredProjects:", projects); // Log the input
-
-//   if (!projects || projects.length === 0 || !projects[0]) {
-//     console.error("Invalid projects data:", projects);
-//     return [];
-//   }
-
-//   // Placeholder comments for the logic...
-//   const structuredData = projects.map((project) => {
-//     // Your logic for structuring individual project data
-//     // For example, mapping project fields to a new structure
-//     const structuredProject = {
-//       id: project.id,
-//       owner: project.owner.toLowerCase(),
-//       title: project.title,
-//       description: project.description,
-//       timestamp: new Date(project.timestamp.toNumber()).getTime(),
-//       expiresAt: new Date(project.expiresAt.toNumber()).getTime(),
-//       date: toDate(project.expiresAt.toNumber() * 1000),
-//       imageURL: project.imageURL,
-//       raised: parseInt(project.raised._hex) / 10 ** 18,
-//       cost: parseInt(project.cost._hex) / 10 ** 18,
-//       backers: project.backers.toNumber(),
-//       status: project.status,
-//     };
-
-//     // Return the structured project
-//     return structuredProject;
-//   });
-//   console.log("Structured projects:", structuredData); // Log the output
-//   // Return the array of structured projects
-//   return structuredData;
-// };
 
 
 const toDate = (timestamp) => {

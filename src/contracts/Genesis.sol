@@ -16,7 +16,6 @@ contract Genesis {
     enum statusEnum {
         OPEN,
         APPROVED,
-        REVERTED,
         DELETED,
         PAIDOUT
     }
@@ -48,12 +47,12 @@ contract Genesis {
         statusEnum status;
     }
 
-    modifier ownerOnly(){
+    modifier ownerOnly() {
         require(msg.sender == owner, "Owner reserved only");
         _;
     }
 
-    event Action (
+    event Action(
         uint256 id,
         string actionType,
         address indexed executor,
@@ -92,7 +91,7 @@ contract Genesis {
         projectsOf[msg.sender].push(project);
         stats.totalProjects += 1;
 
-        emit Action (
+        emit Action(
             projectCount++,
             "PROJECT CREATED",
             msg.sender,
@@ -106,63 +105,80 @@ contract Genesis {
         string memory title,
         string memory description,
         string memory imageURL,
+        uint cost,
         uint expiresAt
     ) public returns (bool) {
         require(msg.sender == projects[id].owner, "Unauthorized Entity");
         require(bytes(title).length > 0, "Title cannot be empty");
         require(bytes(description).length > 0, "Description cannot be empty");
         require(bytes(imageURL).length > 0, "ImageURL cannot be empty");
+        require(cost > 0 ether, "Cost cannot be zero");
 
         projects[id].title = title;
         projects[id].description = description;
         projects[id].imageURL = imageURL;
+        projects[id].cost = cost;
         projects[id].expiresAt = expiresAt;
 
-        emit Action (
-            id,
-            "PROJECT UPDATED",
-            msg.sender,
-            block.timestamp
-        );
+        emit Action(id, "PROJECT UPDATED", msg.sender, block.timestamp);
 
         return true;
     }
 
     function deleteProject(uint id) public returns (bool) {
-        require(projects[id].status == statusEnum.OPEN, "Project no longer opened");
+        require(
+            projects[id].status == statusEnum.OPEN,
+            "Project no longer opened"
+        );
         require(msg.sender == projects[id].owner, "Unauthorized Entity");
 
         projects[id].status = statusEnum.DELETED;
-        performRefund(id);
+        performPayout(id);
 
-        emit Action (
-            id,
-            "PROJECT DELETED",
-            msg.sender,
-            block.timestamp
-        );
+        emit Action(id, "PROJECT DELETED", msg.sender, block.timestamp);
 
         return true;
     }
 
-    function performRefund(uint id) internal {
-        for(uint i = 0; i < backersOf[id].length; i++) {
-            address _owner = backersOf[id][i].owner;
-            uint _contribution = backersOf[id][i].contribution;
-            
-            backersOf[id][i].refunded = true;
-            backersOf[id][i].timestamp = block.timestamp;
-            payTo(_owner, _contribution);
+//     function deleteProject(uint id) public returns (bool) {
+//         require(
+//             projects[id].status == statusEnum.OPEN,
+//             "Project no longer opened"
+//         );
+//         require(msg.sender == projects[id].owner, "Unauthorized Entity");
 
-            stats.totalBacking -= 1;
-            stats.totalDonations -= _contribution;
-        }
-    }
+//         projects[id].status = statusEnum.DELETED;
+//         finalizeProject(id);
+
+//         emit Action(id, "PROJECT DELETED", msg.sender, block.timestamp);
+
+//         return true;
+//     }
+
+//    function finalizeProject(uint id) internal {
+//     uint raised = projects[id].raised;
+//     uint tax = (raised * projectTax) / 100;
+
+//     projects[id].status = statusEnum.PAIDOUT;
+
+//     payTo(projects[id].owner, (raised - tax));
+//     payTo(owner, tax);
+
+//     // Check for underflow before subtraction
+//     require(balance >= raised, "Balance underflow");
+//     balance -= raised;
+
+//     emit Action(id, "PROJECT PAID OUT", msg.sender, block.timestamp);
+// }
+
 
     function backProject(uint id) public payable returns (bool) {
         require(msg.value > 0 ether, "Ether must be greater than zero");
         require(projectExist[id], "Project not found");
-        require(projects[id].status == statusEnum.OPEN, "Project no longer opened");
+        require(
+            projects[id].status == statusEnum.OPEN,
+            "Project no longer opened"
+        );
 
         stats.totalBacking += 1;
         stats.totalDonations += msg.value;
@@ -170,31 +186,21 @@ contract Genesis {
         projects[id].backers += 1;
 
         backersOf[id].push(
-            backerStruct(
-                msg.sender,
-                msg.value,
-                block.timestamp,
-                false
-            )
+            backerStruct(msg.sender, msg.value, block.timestamp, false)
         );
 
-        emit Action (
-            id,
-            "PROJECT BACKED",
-            msg.sender,
-            block.timestamp
-        );
+        emit Action(id, "PROJECT BACKED", msg.sender, block.timestamp);
 
-        if(projects[id].raised >= projects[id].cost) {
+        if (projects[id].raised >= projects[id].cost) {
             projects[id].status = statusEnum.APPROVED;
             balance += projects[id].raised;
             performPayout(id);
             return true;
         }
 
-        if(block.timestamp >= projects[id].expiresAt) {
-            projects[id].status = statusEnum.REVERTED;
-            performRefund(id);
+        if (block.timestamp >= projects[id].expiresAt) {
+            projects[id].status = statusEnum.APPROVED;
+            performPayout(id);
             return true;
         }
 
@@ -212,28 +218,11 @@ contract Genesis {
 
         balance -= projects[id].raised;
 
-        emit Action (
-            id,
-            "PROJECT PAID OUT",
-            msg.sender,
-            block.timestamp
-        );
-    }
-
-    function requestRefund(uint id) public returns (bool) {
-        require(
-            projects[id].status != statusEnum.REVERTED ||
-            projects[id].status != statusEnum.DELETED,
-            "Project not marked as revert or delete"
-        );
-        
-        projects[id].status = statusEnum.REVERTED;
-        performRefund(id);
-        return true;
+        emit Action(id, "PROJECT PAID OUT", msg.sender, block.timestamp);
     }
 
     function payOutProject(uint id) public returns (bool) {
-        require(projects[id].status == statusEnum.APPROVED, "Project not APPROVED");
+        require(projects[id].status == statusEnum.OPEN || projects[id].status == statusEnum.APPROVED, "Project not APPROVED");
         require(
             msg.sender == projects[id].owner ||
             msg.sender == owner,
@@ -244,6 +233,7 @@ contract Genesis {
         return true;
     }
 
+
     function changeTax(uint _taxPct) public ownerOnly {
         projectTax = _taxPct;
     }
@@ -253,11 +243,11 @@ contract Genesis {
 
         return projects[id];
     }
-    
+
     function getProjects() public view returns (projectStruct[] memory) {
         return projects;
     }
-    
+
     function getBackers(uint id) public view returns (backerStruct[] memory) {
         return backersOf[id];
     }
