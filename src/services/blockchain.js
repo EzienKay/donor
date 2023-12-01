@@ -187,17 +187,32 @@ const getBackers = async (id) => {
   }
 }
 
+
+
+
+
+
+
+
+
+
+const deleteProject = async (id) => {
+  try {
+    if (!ethereum) return alert('Please install Metamask')
+    const contract = await getEtheriumContract()
+    await contract.deleteProject(id)
+  } catch (error) {
+    reportError(error)
+  }
+}
+
 const payoutProject = async (id) => {
   try {
     if (!ethereum) return alert('Please install Metamask')
     const connectedAccount = getGlobalState('connectedAccount')
     const contract = await getEtheriumContract()
-    const options = {
-      gasLimit: 500000, // Adjust the gas limit based on your contract's needs
-    };
 
     tx = await contract.payOutProject(id, {
-      ...options,
       from: connectedAccount,
     })
 
@@ -209,36 +224,9 @@ const payoutProject = async (id) => {
 }
 
 
-const deleteProject = async (id) => {
-  try {
-    if (!ethereum) throw new Error('Please install Metamask');
-    const contract = await getEtheriumContract();
-    const options = {
-      gasLimit: 500000, // Adjust the gas limit based on your contract's needs
-    };
-    await contract.deleteProject(id, options);
-  } catch (error) {
-    reportError(error);
-  }
-};
 
-// const deleteProject = async (id) => {
-//   try {
-//     if (!ethereum) throw new Error('No ethereum object. Please install MetaMask.');
-//     const contract = await getEtheriumContract();
-//     const options = {
-//       gasLimit: 500000, // Adjust the gas limit based on your contract's needs
-//     };
-//     await contract.deleteProject(id, options);
-//   } catch (error) {
-//     if (error.code === -32603 && error.data && error.data.message) {
-//       console.error("Revert Reason:", error.data.message);
-//     } else {
-//       console.error("Unexpected Error:", error);
-//     }
-//     reportError(error);
-//   }
-// };
+
+
 
 
 

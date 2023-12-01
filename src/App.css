@@ -1585,7 +1585,7 @@ body,
 
 .ui-checkbox-label {
   display: inline-flex;
-  align-items: flex-start;
+  align-items: center;
   max-width: 100%;
   color: #222832;
   cursor: pointer;
@@ -5758,4 +5758,9 @@ a[href].opacity-50:hover,
 .update3 input {
   padding-block: 8px;
   padding-left: 10px;
+}
+
+
+input.kay.price-control.text-sans-serif {
+  text-align: end;
 }

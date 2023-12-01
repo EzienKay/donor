@@ -7,6 +7,7 @@ import Demo from "./component/Demo";
 import Project from "./component/Project";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Buttons from "./component/Buttons";
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -26,12 +27,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Campaign />} />
           <Route path="create" element={<Demo />} />
-          <Route path="/projects/:id" element={<Project />} />
+          {/* <Route path="/projects/:id" element={<Project />} /> */}
+          <Route path="/buttons" element={<Buttons />} />
         </Routes>
       ) : null }
       <ToastContainer
         position="bottom-center"
-        autoClose={10000}
+        autoClose={8000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

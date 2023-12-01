@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { getBackers, loadProjects } from "../services/blockchain";
-import DonationForm from "./DonationForm";
 import { truncate, useGlobalState } from "../store/Index";
 import Moment from "react-moment";
 import { globe } from "../res/image/Images";
+import Buttons from "./Buttons";
 
 const Campaign = () => {
   const [projects] = useGlobalState("projects");
@@ -199,7 +199,7 @@ const Campaign = () => {
               {projects[0]?.title}
             </h1>
             <div className="spacer-32"></div>
-            <div className="campaign-meter" data-qa="campaign-meter-full">
+            <div className="campaign-meter" data-qa="campaign-meter-full" style={{ maxWidth:"73%" }}>
               <div
                 className="campaign-meter-raised"
                 data-testid="raised-percent"
@@ -457,7 +457,7 @@ const Campaign = () => {
           <div className="spacer-80"></div>
         </div>
       </div>
-      <DonationForm />
+      <Buttons />
     </>
   );
 };

@@ -124,52 +124,7 @@ contract Genesis {
 
         return true;
     }
-
-    function deleteProject(uint id) public returns (bool) {
-        require(
-            projects[id].status == statusEnum.OPEN,
-            "Project no longer opened"
-        );
-        require(msg.sender == projects[id].owner, "Unauthorized Entity");
-
-        projects[id].status = statusEnum.DELETED;
-        performPayout(id);
-
-        emit Action(id, "PROJECT DELETED", msg.sender, block.timestamp);
-
-        return true;
-    }
-
-//     function deleteProject(uint id) public returns (bool) {
-//         require(
-//             projects[id].status == statusEnum.OPEN,
-//             "Project no longer opened"
-//         );
-//         require(msg.sender == projects[id].owner, "Unauthorized Entity");
-
-//         projects[id].status = statusEnum.DELETED;
-//         finalizeProject(id);
-
-//         emit Action(id, "PROJECT DELETED", msg.sender, block.timestamp);
-
-//         return true;
-//     }
-
-//    function finalizeProject(uint id) internal {
-//     uint raised = projects[id].raised;
-//     uint tax = (raised * projectTax) / 100;
-
-//     projects[id].status = statusEnum.PAIDOUT;
-
-//     payTo(projects[id].owner, (raised - tax));
-//     payTo(owner, tax);
-
-//     // Check for underflow before subtraction
-//     require(balance >= raised, "Balance underflow");
-//     balance -= raised;
-
-//     emit Action(id, "PROJECT PAID OUT", msg.sender, block.timestamp);
-// }
+  
 
 
     function backProject(uint id) public payable returns (bool) {
@@ -207,6 +162,28 @@ contract Genesis {
         return true;
     }
 
+
+
+
+
+    function deleteProject(uint id) public returns (bool) {
+        require(projects[id].status == statusEnum.OPEN, "Project no longer opened");
+        require(msg.sender == projects[id].owner, "Unauthorized Entity");
+
+        projects[id].status = statusEnum.DELETED;
+        performPayout(id);
+
+        emit Action (
+            id,
+            "PROJECT DELETED",
+            msg.sender,
+            block.timestamp
+        );
+
+        return true;
+    }
+
+
     function performPayout(uint id) internal {
         uint raised = projects[id].raised;
         uint tax = (raised * projectTax) / 100;
@@ -218,20 +195,22 @@ contract Genesis {
 
         balance -= projects[id].raised;
 
-        emit Action(id, "PROJECT PAID OUT", msg.sender, block.timestamp);
-    }
-
-    function payOutProject(uint id) public returns (bool) {
-        require(projects[id].status == statusEnum.OPEN || projects[id].status == statusEnum.APPROVED, "Project not APPROVED");
-        require(
-            msg.sender == projects[id].owner ||
-            msg.sender == owner,
-            "Unauthorized Entity"
+        emit Action (
+            id,
+            "PROJECT PAID OUT",
+            msg.sender,
+            block.timestamp
         );
-
-        performPayout(id);
-        return true;
     }
+
+
+
+
+
+    
+
+
+    
 
 
     function changeTax(uint _taxPct) public ownerOnly {
