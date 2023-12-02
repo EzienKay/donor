@@ -42,7 +42,7 @@ const isWallectConnected = async () => {
       console.log('No accounts found.')
     }
   } catch (error) {
-    reportError(error)
+    console.error('Error:', error.message);
   }
 }
 
@@ -76,7 +76,7 @@ const createProject = async ({
     await tx.wait()
     await loadProjects()
   } catch (error) {
-    reportError(error)
+    console.error('Error:', error.message);
   }
 }
 
@@ -97,7 +97,7 @@ const updateProject = async ({
     await tx.wait();
     await loadProjects();
   } catch (error) {
-    reportError(error);
+    console.error('Error:', error.message);
   }
 };
 
@@ -116,7 +116,7 @@ const loadProjects = async () => {
     setGlobalState('stats', structureStats(stats))
     setGlobalState('projects', structuredProjects(projects))
   } catch (error) {
-    reportError(error)
+    console.error('Error:', error.message);
   }
 }
 
@@ -219,9 +219,14 @@ const payoutProject = async (id) => {
     await tx.wait()
     await getBackers(id)
   } catch (error) {
-    reportError(error)
+    console.error('Error:', error.message);
   }
 }
+
+
+
+
+
 
 
 

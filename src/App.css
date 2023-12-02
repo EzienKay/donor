@@ -2077,7 +2077,7 @@ body,
     display: flex;
     align-items: flex-start;
     overflow: visible;
-  }
+  }  
 }
 
 .app-campaign {
@@ -5763,4 +5763,12 @@ a[href].opacity-50:hover,
 
 input.kay.price-control.text-sans-serif {
   text-align: end;
+}
+
+
+@media (min-width: 960px) {
+  
+  .app-campaign-fixed-panel {
+    display: none;
+  }
 }

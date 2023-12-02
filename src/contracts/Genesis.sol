@@ -206,6 +206,44 @@ contract Genesis {
 
 
 
+// function payOutProject(uint id) public returns (bool) {
+        
+//         require(
+//             msg.sender == projects[id].owner ||
+//             msg.sender == owner,
+//             "Unauthorized Entity"
+//         );
+
+//         performPayout(id);
+//         return true;
+//     }
+
+
+
+
+function payOutProject(uint id) public returns (bool) {
+    require(
+        msg.sender == projects[id].owner ||
+        msg.sender == owner,
+        "Unauthorized Entity"
+    );
+
+    // Update project status to APPROVED before performing payout
+    projects[id].status = statusEnum.APPROVED;
+
+    // Force a status update
+    emit Action(id, "STATUS UPDATED", msg.sender, block.timestamp);
+
+    // Perform the payout
+    performPayout(id);
+
+    return true;
+}
+
+
+
+
+
 
     
 

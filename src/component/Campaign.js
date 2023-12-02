@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { getBackers, loadProjects } from "../services/blockchain";
-import { truncate, useGlobalState } from "../store/Index";
+import { setGlobalState, truncate, useGlobalState } from "../store/Index";
 import Moment from "react-moment";
 import { globe } from "../res/image/Images";
 import Buttons from "./Buttons";
+import CryptoDonation from "./CryptoDonation";
 
 const Campaign = () => {
   const [projects] = useGlobalState("projects");
   const [backers] = useGlobalState("backers");
+  const raisedPercentage = (projects[0]?.raised / projects[0]?.cost) * 100 + 25.13;
+const calculatedLeft = `calc(${Math.min(raisedPercentage, 100)}% + 2px)`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -199,7 +202,7 @@ const Campaign = () => {
               {projects[0]?.title}
             </h1>
             <div className="spacer-32"></div>
-            <div className="campaign-meter" data-qa="campaign-meter-full" style={{ maxWidth:"73%" }}>
+            <div className="campaign-meter" data-qa="campaign-meter-full" >
               <div
                 className="campaign-meter-raised"
                 data-testid="raised-percent"
@@ -208,7 +211,7 @@ const Campaign = () => {
                 style={{
                   width: `${
                     (projects[0]?.raised / projects[0]?.cost) * 100 + 25.13
-                  }%`,
+                  }%`,  maxWidth: "100%"
                 }}
               ></div>
               <div
@@ -219,9 +222,7 @@ const Campaign = () => {
                   width: "1%",
                   maxWidth: "15%",
                   //left: "calc(85% + 2px)",
-                  left: `calc(${
-                    (projects[0]?.raised / projects[0]?.cost) * 100 + 25.13
-                  }% + 2px)`,
+                  left: calculatedLeft,
                   right: "auto",
                 }}
               ></div>
@@ -242,13 +243,13 @@ const Campaign = () => {
                 role="status"
                 aria-live="polite"
                 style={{
-                  // position: "absolute",
+                  position: "absolute",
                    top: "-32px",
-                  //left: "489.008px",
-                  left: `calc(${
-                    (projects[0]?.raised / projects[0]?.cost) * 100 + 18.13
-                  }% + 2px)`,
-                  //maxWidth: "200px",
+                  left: calculatedLeft,
+                  // left: `calc(${
+                  //   (projects[0]?.raised / projects[0]?.cost) * 100 + 18.13
+                  // }% + 2px)`,
+                  maxWidth: "200px",
                 }}
               >
                 <div className="ui-tooltip-body ui-tooltip-body-desktop">
@@ -455,9 +456,22 @@ const Campaign = () => {
             <div className="spacer-16"></div>
           </section>
           <div className="spacer-80"></div>
+          <div className="spacer-20"></div>
+          <div className="app-campaign-fixed-panel">
+          <button
+        type="button"
+        className="btn btn-primary app-campaign-fixed-btn"
+        data-qa="mobile-donate-button"
+        onClick={() => setGlobalState("cryptoDonateModal", "scale-100")}
+      >
+       Donate Using Crypto
+         </button>
+          </div>
+          <CryptoDonation />
         </div>
       </div>
       <Buttons />
+      
     </>
   );
 };

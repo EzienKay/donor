@@ -14,18 +14,22 @@ const Buttons = () => {
   const [dedicateDonation, setDedicateDonation] = useState(false);
   const [donationGoal, setDonationGoal] = useState('EL6VVAKZ');
 
+
+  console.log('does work', projects)
+
+
   useEffect(() => {
-    // Fetch Ethereum to USD conversion rate from Coindesk API
+    // Fetch Ethereum to USD conversion rate from CoinGecko API
     const fetchEthToUsdRate = async () => {
       try {
         const response = await fetch(
-          'https://api.coindesk.com/v1/bpi/currentprice.json'
+          'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
         );
         const data = await response.json();
-        setEthToUsdRate(data.bpi.USD.rate.replace(',', ''));
+        setEthToUsdRate(data.ethereum.usd);
 
         // Calculate and set the initial Ethereum amount based on the default donationAmountUSD
-        const initialEthAmount = (donationAmountUSD / data.bpi.USD.rate.replace(',', '')).toFixed(6);
+        const initialEthAmount = (donationAmountUSD / data.ethereum.usd).toFixed(6);
         setDonationAmountETH(initialEthAmount);
       } catch (error) {
         console.error('Error fetching Ethereum to USD rate:', error);
@@ -34,10 +38,6 @@ const Buttons = () => {
 
     fetchEthToUsdRate();
   }, [donationAmountUSD]);
-
-  const handleFrequencyChange = (frequency) => {
-    setDonationFrequency(frequency);
-  };
 
   const handleAmountUSDChange = (amount) => {
     setDonationAmountUSD(amount);
@@ -51,6 +51,15 @@ const Buttons = () => {
     // Calculate USD equivalent based on the conversion rate
     const usdEquivalent = (amount * ethToUsdRate).toFixed(2);
     setDonationAmountUSD(usdEquivalent);
+  };
+
+
+
+
+
+
+  const handleFrequencyChange = (frequency) => {
+    setDonationFrequency(frequency);
   };
 
   const handleDedicateDonationChange = () => {
@@ -129,7 +138,7 @@ const Buttons = () => {
                   onClick={() => handleFrequencyChange('monthly')}
                 >
 
-                    
+
 
 <span
                       className="p-rel flex-shrink-0 text-fuchsia-80 me-1"
@@ -228,8 +237,7 @@ const Buttons = () => {
           <span className="sr-only ">Donation amount ETH</span>
           <input
             type="number"
-            step={0.01}
-                        min={0.01}
+            
             className="kay price-control text-sans-serif"
             autoComplete="off"
             placeholder="Ethereum"
