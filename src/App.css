@@ -5772,3 +5772,40 @@ input.kay.price-control.text-sans-serif {
     display: none;
   }
 }
+
+
+.textingout .modal-dialog {
+  width: fit-content;
+    margin-inline: auto;
+    padding: 2rem 10rem;
+    background-color: #ffffff;
+    margin-top: 5rem;
+    border: 2px solid;
+    color: black;
+}
+
+.textingout .modal-content { 
+  border-radius: 0;
+  overflow: hidden;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.textingout .modal-header {
+  padding: 1rem;
+    display: flex;
+    gap: 20px;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+
+.textingout .btn-close::before {
+  content: "x";
+}
+
+.textingout .btn .btn-primary {
+  margin-top: 1.5rem;
+}

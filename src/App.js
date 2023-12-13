@@ -8,7 +8,7 @@ import Demo from "./component/Demo";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Buttons from "./component/Buttons";
-import CryptoDonation from "./component/CryptoDonation";
+//import CryptoDonation from "./component/CryptoDonation";
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -30,7 +30,7 @@ function App() {
           <Route path="create" element={<Demo />} />
           {/* <Route path="/projects/:id" element={<Project />} /> */}
           <Route path="/buttons" element={<Buttons />} />
-          <Route path="/crypto" element={<CryptoDonation />} />
+        {/* <Route path="/crypto" element={<CryptoDonation />} /> */}
         </Routes>
         ) : null }
       <ToastContainer

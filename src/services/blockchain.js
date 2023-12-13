@@ -3,26 +3,47 @@ import address from '../abis/contractAddress.json'
 import { getGlobalState, setGlobalState } from '../store/Index'
 import { ethers } from 'ethers'
 
+
 const { ethereum } = window
 const contractAddress = address.address
 const contractAbi = abi.abi
 let tx
 
-const connectWallet = async () => {
+// const connectWallet = async () => {
+//   try {
+//     if (!ethereum) return alert('Please install Metamask')
+//     const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+//     setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
+//   } catch (error) {
+//     reportError(error)
+//   }
+// }
+
+
+
+const connectWallet = async (setConnectedAccount, setShowModal) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
-    setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
+    if (!window.ethereum) {
+      setShowModal(true);
+      return;
+    }
+
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    setConnectedAccount(accounts[0]?.toLowerCase());
   } catch (error) {
-    reportError(error)
+    reportError(error);
   }
-}
+};
+
+
 
 
 
 const isWallectConnected = async () => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
     const accounts = await ethereum.request({ method: 'eth_accounts' })
     setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
 
@@ -38,7 +59,7 @@ const isWallectConnected = async () => {
     if (accounts.length) {
       setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
     } else {
-      alert('Please connect wallet.')
+      // alert('Please connect wallet.')
       console.log('No accounts found.')
     }
   } catch (error) {
@@ -68,7 +89,9 @@ const createProject = async ({
   expiresAt,
 }) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
 
     const contract = await getEtheriumContract()
     cost = ethers.utils.parseEther(cost)
@@ -89,7 +112,9 @@ const updateProject = async ({
   expiresAt,
 }) => {
   try {
-    if (!ethereum) return alert('Please install Metamask');
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
 
     const contract = await getEtheriumContract();
     cost = ethers.utils.parseEther(cost);
@@ -107,7 +132,9 @@ const updateProject = async ({
 
 const loadProjects = async () => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
 
     const contract = await getEtheriumContract()
     const projects = await contract.getProjects()
@@ -122,7 +149,9 @@ const loadProjects = async () => {
 
 const loadProject = async (id) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
     const contract = await getEtheriumContract()
     const project = await contract.getProject(id)
 
@@ -136,8 +165,7 @@ const loadProject = async (id) => {
 const backProject = async (id, amount) => {
   try {
 
-    if (!ethereum) {
-      alert('Please install Metamask');
+    if (!ethereum) {      
       return;
     }
 
@@ -164,7 +192,9 @@ const backProject = async (id, amount) => {
       // Handle cancellation (e.g., show a message to the user)
       // You can add a custom message here
     } else if (typeof ethereum === 'undefined') {
-      alert('Please install Metamask');
+      
+        throw new Error('MetaMask not detected. Please install MetaMask.');
+      
     } else {
       reportError(error);
     }
@@ -177,7 +207,9 @@ const backProject = async (id, amount) => {
 
 const getBackers = async (id) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
     const contract = await getEtheriumContract()
     let backers = await contract.getBackers(id)
 
@@ -198,7 +230,9 @@ const getBackers = async (id) => {
 
 const deleteProject = async (id) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
     const contract = await getEtheriumContract()
     await contract.deleteProject(id)
   } catch (error) {
@@ -208,7 +242,9 @@ const deleteProject = async (id) => {
 
 const payoutProject = async (id) => {
   try {
-    if (!ethereum) return alert('Please install Metamask')
+    if (!ethereum)  {
+      throw new Error('MetaMask not detected. Please install MetaMask.');
+    }
     const connectedAccount = getGlobalState('connectedAccount')
     const contract = await getEtheriumContract()
 

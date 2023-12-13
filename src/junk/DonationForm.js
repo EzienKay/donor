@@ -69,7 +69,7 @@ const DonationForm = () => {
           <div className="spacer-80"></div>
         </div>
       </div>
-    </>
+    </> 
   );
 };
 

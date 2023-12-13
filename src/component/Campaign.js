@@ -1,16 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getBackers, loadProjects } from "../services/blockchain";
 import { setGlobalState, truncate, useGlobalState } from "../store/Index";
 import Moment from "react-moment";
 import { globe } from "../res/image/Images";
 import Buttons from "./Buttons";
-import CryptoDonation from "./CryptoDonation";
+import CryptoDonation from "../junk/CryptoDonation";
 
 const Campaign = () => {
   const [projects] = useGlobalState("projects");
   const [backers] = useGlobalState("backers");
   const raisedPercentage = (projects[0]?.raised / projects[0]?.cost) * 100 + 25.13;
 const calculatedLeft = `calc(${Math.min(raisedPercentage, 100)}% + 2px)`;
+const recentBackers = backers.slice(-10).reverse();
+const [ethToUsdRate, setEthToUsdRate] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,9 +32,21 @@ const calculatedLeft = `calc(${Math.min(raisedPercentage, 100)}% + 2px)`;
     fetchBackers();
   }, [projects]);
 
-  // if (!projects || projects.length === 0) {
-  //   return <p>Loading...</p>; // or render some loading state
-  // }
+  useEffect(() => {
+    const fetchEthToUsdRate = async () => {
+      try {
+        const response = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+        );
+        const data = await response.json();
+        setEthToUsdRate(data.ethereum.usd);
+      } catch (error) {
+        console.error("Error fetching Ethereum to USD rate:", error);
+      }
+    };
+  
+    fetchEthToUsdRate();
+  }, []);
 
   return (
     <>
@@ -409,17 +423,17 @@ const calculatedLeft = `calc(${Math.min(raisedPercentage, 100)}% + 2px)`;
             <div className="spacer-40"></div>
             <h3 className="title-4 text-ellipsis">Recent donations</h3>
             <div className="spacer-20"></div>
-            {backers.map((backer, i) => (
-              <div
-                key={i}
-                className="px-5 pt-4 mb-4 border border-gray-15 border-radius-16 pb-4 d-flex flex-row-reverse align-items-flex-start"
-                data-testid="donor-impact-section-DUCPURLF"
-              >
+            {recentBackers.map((backer, i) => (
+  <div
+    key={i}
+    className="px-5 pt-4 mb-4 border border-gray-15 border-radius-16 pb-4 d-flex flex-row-reverse align-items-flex-start"
+    data-testid={backer.id} // You can use a unique identifier here
+  >
                 <p
                   className="body-1 text-primary text-sans-serif flex-shrink-0 ms-5"
                   style={{ marginTop: "-2px" }}
                 >
-                  ${(backer.contribution * 2112.74).toLocaleString()}
+                  ${(backer.contribution * ethToUsdRate).toLocaleString()}
                 </p>
                 <div
                   className="flex-grow-1 me-auto"
